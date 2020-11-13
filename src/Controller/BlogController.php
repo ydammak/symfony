@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Post;
@@ -32,7 +33,7 @@ class BlogController extends AbstractController
         return $this->json($post);
     }
     /**
-     * @Route("/{page}", defaults={"page":5}, name="get-all-posts")
+     * @Route("/{page}", defaults={"page":5}, name="get-all-posts" ,methods={"GET"})
      * @return void
      */
     public function index($page,Request $request )
@@ -54,22 +55,36 @@ class BlogController extends AbstractController
         ]);
     }
     /**
-     * @Route("/post/{id}",requirements={"id": "\d+"}, name="get-one-post-id")
+     * @Route("/post/{id}",requirements={"id": "\d+"}, name="get-one-post-id" ,methods={"GET"})
+     * @ParamConverter("post",class="App:Post")
      */
-    public function postById($id)
+    public function postById( $post)
     {        
-        $repository = $this->getDoctrine()->getRepository(Post::class);
-        $post = $repository->find($id);
+        //$repository = $this->getDoctrine()->getRepository(Post::class);
+        //$post = $repository->find($id);
         return $this->json($post);
     }
     /**
-     * @Route("/post/{slug}" , name="get-one-post-slug")
+     * @Route("/post/{slug}" , name="get-one-post-slug" ,methods={"GET"})
+     * @ParamConverter("post",class="App:Post", options={"mapping":{"slug":"slug"}})
      */
-    public function postBySlug($slug)
+    public function postBySlug( $post)
     {
-        $repository = $this->getDoctrine()->getRepository(Post::class);
-        $post = $repository->findOneBy(['slug'=> $slug]);
+        //$repository = $this->getDoctrine()->getRepository(Post::class);
+        //$post = $repository->findOneBy(['slug'=> $slug]);
         return $this->json($post);
+    }
+
+    /**
+     * @Route("/post/{id}" , name="delete-post", methods={"DELETE"})
+     */
+    public function destroy(Post $post)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($post);
+        $em->flush();
+
+        return $this->json(null, 204);    
     }
 
 }
