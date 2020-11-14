@@ -12,8 +12,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ApiResource(
- * itemOperations={"GET"},
- * collectionOperations={"GET"},
+ * itemOperations={"GET","DELETE"},
+ * collectionOperations={"GET","POST"},
  * normalizationContext={
  *  "groups"={"read"}
  * }
@@ -39,6 +39,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read"})
      */
     private $password;
 
