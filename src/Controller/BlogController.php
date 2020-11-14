@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use App\Entity\Post;
 
 /**
@@ -33,7 +33,7 @@ class BlogController extends AbstractController
         return $this->json($post);
     }
     /**
-     * @Route("/{page}", defaults={"page":5}, name="get-all-posts" ,methods={"GET"})
+     * @Route("/{page}", defaults={"page":5}, name="get-all-posts", methods={"GET"})
      * @return void
      */
     public function index($page,Request $request )
@@ -55,8 +55,8 @@ class BlogController extends AbstractController
         ]);
     }
     /**
-     * @Route("/post/{id}",requirements={"id": "\d+"}, name="get-one-post-id" ,methods={"GET"})
-     * @ParamConverter("post",class="App:Post")
+     * @Route("/post/{id}",requirements={"id": "\d+"}, name="get-one-post-id", methods={"GET"})
+     * @ParamConverter("post", class="App:Post")
      */
     public function postById( $post)
     {        
@@ -65,8 +65,8 @@ class BlogController extends AbstractController
         return $this->json($post);
     }
     /**
-     * @Route("/post/{slug}" , name="get-one-post-slug" ,methods={"GET"})
-     * @ParamConverter("post",class="App:Post", options={"mapping":{"slug":"slug"}})
+     * @Route("/post/{slug}" , name="get-one-post-slug" , methods={"GET"})
+     * @ParamConverter("post", class="App:Post", options={"mapping": {"slug": "slug"}})
      */
     public function postBySlug( $post)
     {
@@ -74,17 +74,17 @@ class BlogController extends AbstractController
         //$post = $repository->findOneBy(['slug'=> $slug]);
         return $this->json($post);
     }
-
     /**
      * @Route("/post/{id}" , name="delete-post", methods={"DELETE"})
      */
     public function destroy(Post $post)
     {
         $em = $this->getDoctrine()->getManager();
-        $em->remove($post);
+        $em->persist($post);
         $em->flush();
 
-        return $this->json(null, 204);    
+        return $this->json(null, 204);
+
     }
 
 }
