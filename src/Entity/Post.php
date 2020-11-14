@@ -10,7 +10,10 @@ use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ * itemOperations={"GET"},
+ * collectionOperations={"GET"}
+ * )
  */
 class Post
 {
