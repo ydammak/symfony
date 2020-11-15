@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ApiResource(
@@ -18,8 +20,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *  "groups"={"read"}
  * }
  * )
- * 
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity(fields={"username","email"})
  */
 class User implements UserInterface
 {
@@ -34,6 +36,9 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)     
      * @Groups({"read"})
+     * @Assert\NotBlank()
+     * @Assert\Regex(pattern="/^[a-z]+$/i", message="this field not respect the pattern")
+     * @Assert\Length(min=6,max=10, minMessage="ce champs doit avoir au moins {{ limit }} caracteres", maxMessage="ce champs doit avoir au max {{ limit }} caracteres")
      */
     private $username;
 
@@ -44,13 +49,24 @@ class User implements UserInterface
     private $password;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Expression(
+     * "this.getPassword() == this.getRetypedPassword()",message="password does not match"
+     * )
+     */
+    private $retypedPassword;
+
+    /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"read"})
+     * @Assert\NotBlank(message="ce champs est obligatoire !")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $email;
 
@@ -198,6 +214,16 @@ class User implements UserInterface
     }
     public function eraseCredentials()
     {
+    }
+    public function getRetypedPassword(): ?string
+    {
+        return $this->retypedPassword;
+    }
+
+    public function setRetypedPassword(string $retypedPassword): self
+    {
+        $this->retypedPassword = $retypedPassword;
+        return $this;
     }
 
 }
