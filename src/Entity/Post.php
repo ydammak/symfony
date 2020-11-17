@@ -8,13 +8,20 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
  * @ApiResource(
- * itemOperations={"GET","DELETE",
+ * itemOperations={
+ *      "GET"={
+ *          "normalization_context"={
+ *              "groups"={"get-post-with-author"}
+ *            }
+ *      },
+ *      "DELETE",
  *      "PUT"={
  *          "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object.getAuthor() == user"
  *      }
@@ -32,6 +39,7 @@ class Post
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"get-post-with-author"})
      */
     private $id;
 
@@ -39,29 +47,34 @@ class Post
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\NotBlank()
      * @Assert\Length(min=10)
+     * @Groups({"get-post-with-author"})
      */
     private $title;
 
      /**
      * @ORM\Column(type="string", length=125, nullable=true)
+     * @Groups({"get-post-with-author"})
      */
     private $slug;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\Length(min=10)
+     * @Groups({"get-post-with-author"})
      */
     private $content;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Assert\DateTime()
+     * @Groups({"get-post-with-author"})
      */
     private $published;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn( nullable=false)
+     * @Groups({"get-post-with-author"})
      */
     private $author;
 

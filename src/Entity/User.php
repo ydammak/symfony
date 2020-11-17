@@ -59,7 +59,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)     
-     * @Groups({"get","post"})
+     * @Groups({"get","post","get-comment-with-author","get-post-with-author"})
      * @Assert\NotBlank()
      * @Assert\Regex(pattern="/^[a-z]+$/i", message="this field not respect the pattern")
      * @Assert\Length(min=6,max=10, minMessage="ce champs doit avoir au moins {{ limit }} caracteres", maxMessage="ce champs doit avoir au max {{ limit }} caracteres")
@@ -83,14 +83,14 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get","put","post"})
+     * @Groups({"get","put","post","get-comment-with-author","get-post-with-author"})
      * @Assert\NotBlank(message="ce champs est obligatoire !")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"post","put"})
+     * @Groups({"post","put","get-post-with-author"})
      * @Assert\NotBlank()
      * @Assert\Email()
      */
