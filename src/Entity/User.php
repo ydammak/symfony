@@ -28,7 +28,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *          "normalization_context"={
  *              "groups"= {"get"}
  *          }
- *      },"DELETE"},
+ *      },
+ *      "DELETE"={
+ *          "access_control"="is_granted('ROLE_SUPERADMIN')"
+ *      }
+ * },
  * collectionOperations={"GET",
  *      "POST"={
  *          "denormalization_context"={
