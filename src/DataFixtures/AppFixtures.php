@@ -64,6 +64,7 @@ class AppFixtures extends Fixture
     }
     public function loadUser(ObjectManager $manager)
     {
+        $myRoles = [User::ROLE_ADMIN,User::ROLE_COMMENTATOR,User::ROLE_EDITOR,User::ROLE_SUPERADMIN,User::ROLE_WRITER];
         for ($i= 0 ;$i <10 ; $i++)
         {
             $user = new User;
@@ -71,6 +72,7 @@ class AppFixtures extends Fixture
             $user->setName($this->faker->name);
             $user->setPassword($this->passswordEncoder->encodePassword($user,'secret123'));
             $user->setEmail($this->faker->email);
+            $user->setRoles([$myRoles[rand(0,4)]]);
             $this->addReference("user_admin_$i", $user);
             $manager->persist($user);
         }
