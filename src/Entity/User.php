@@ -11,6 +11,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
+
+use App\Controller\ResetPasswordAction;
 
 /**
  * @ApiResource(
@@ -28,6 +31,15 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *          "normalization_context"={
  *              "groups"= {"get"}
  *          }
+ *      },
+ *      "put-reset-password"={
+ *          "access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object == user",
+ *             "method"="PUT",
+ *             "path"="/users/{id}/reset-password",
+ *             "controller"= ResetPasswordAction::class,
+ *             "denormalization_context"={
+ *                 "groups"= {"put-reset-password"}
+ *             }
  *      },
  *      "DELETE"={
  *          "access_control"="is_granted('ROLE_SUPERADMIN')"
@@ -73,7 +85,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255)     
      * @Groups({"get","post","get-comment-with-author","get-post-with-author"})
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(groups={"post"})
      * @Assert\Regex(pattern="/^[a-z]+$/i", message="this field not respect the pattern")
      * @Assert\Length(min=6,max=10, minMessage="ce champs doit avoir au moins {{ limit }} caracteres", maxMessage="ce champs doit avoir au max {{ limit }} caracteres")
      */
@@ -81,31 +93,54 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"post","put"})
+     * @Groups({"post"})
      */
     private $password;
 
     /**
-     * @Assert\NotBlank()
+     * @Assert\NotBlank(groups={"post"})
      * @Assert\Expression(
-     * "this.getPassword() == this.getRetypedPassword()",message="password does not match"
-     * )
-     * @Groups({"post","put"})
+     * "this.getPassword() == this.getRetypedPassword()",message="password does not match",
+     * groups={"post"})
+     * @Groups({"post"})
      */
     private $retypedPassword;
+
+
+    /**
+     * @Assert\NotNull()
+     * @Groups({"put-reset-password"})
+     */
+    private $newPassword;
+
+     /**
+     * @Assert\NotNull()
+     * @Assert\Expression(
+     * "this.getNewPassword() == this.getNewRetypedPassword()",message="password does not match"
+     * )
+     * @Groups({"put-reset-password"})
+     */
+    private $newRetypedPassword;
+    
+    /**
+     * @Assert\NotNull()
+     * @UserPassword()
+     * @Groups({"put-reset-password"})
+     */
+    private $oldPassword;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"get","put","post","get-comment-with-author","get-post-with-author"})
-     * @Assert\NotBlank(message="ce champs est obligatoire !")
+     * @Assert\NotBlank(message="ce champs est obligatoire !",groups={"post","put"})
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"post","put","get-post-with-author"})
-     * @Assert\NotBlank()
-     * @Assert\Email()
+     * @Assert\NotBlank(groups={"post","put"})
+     * @Assert\Email(groups={"post","put"})
      */
     private $email;
 
@@ -275,6 +310,37 @@ class User implements UserInterface
     public function setRetypedPassword(string $retypedPassword): self
     {
         $this->retypedPassword = $retypedPassword;
+        return $this;
+    }
+
+    public function getNewPassword(): ?string
+    {
+        return $this->newPassword;
+    }
+
+    public function setNewPassword(string $newPassword): self
+    {
+        $this->newPassword = $newPassword;
+        return $this;
+    }
+    public function getNewRetypedPassword(): ?string
+    {
+        return $this->newRetypedPassword;
+    }
+
+    public function setNewRetypedPassword(string $newRetypedPassword): self
+    {
+        $this->newRetypedPassword = $newRetypedPassword;
+        return $this;
+    }
+    public function getOldPassword(): ?string
+    {
+        return $this->oldPassword;
+    }
+
+    public function setOldPassword(string $oldPassword): self
+    {
+        $this->oldPassword = $oldPassword;
         return $this;
     }
 
