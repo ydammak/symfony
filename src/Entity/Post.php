@@ -10,11 +10,23 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Serializer\Filter\PropertyFilter;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
+ * @ApiFilter(SearchFilter::class, properties={"id": "exact", "title": "partial","author.name":"partial"})
+ * @ApiFilter(DateFilter::class, properties={"published"})
+ * @ApiFilter(RangeFilter::class, properties={"id"})
+ * @ApiFilter(OrderFilter::class, properties={"id"}, arguments={"orderParameterName"="order"})
+ * @ApiFilter(PropertyFilter::class, arguments={"parameterName": "properties", "overrideDefaultProperties": false,
+ *           "whitelist": {"id","title","author","content"}})
  * @ApiResource(
+ * attributes={"order"= {"author": "DESC","title":"ASC"}},
  * itemOperations={
  *      "GET"={
  *          "normalization_context"={

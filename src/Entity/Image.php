@@ -15,7 +15,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ApiResource(
  *     attributes={
- *          "formats"={"json","form"={"multipart/form-data"}}
+ *          "formats"={"json","form"={"multipart/form-data"}},
+ *          "order"= {"id": "DESC"}
  *     },
  *     collectionOperations={
  *       "get",
